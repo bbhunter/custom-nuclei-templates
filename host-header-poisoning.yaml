@@ -1,0 +1,32 @@
+id: host-header-poisoning
+
+info:
+  name: Simple Host Header Poisoning
+  author: tedm.infosec
+  severity: medium
+
+requests:
+  - raw:
+      - |
+        GET /?1 HTTP/1.1
+        Host: {{Hostname}}
+        X-Forwarded-Host: qqq.com
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+        Accept: */*
+        Connection: close
+      - |
+        GET /?2 HTTP/1.1
+        Host: {{Hostname}}
+        X-Host: qqq.com
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+        Accept: */*
+        Connection: close
+
+    matchers:
+      - type: word
+        words:
+          - "qqq.com"
+        part: body
+      - type: status
+        status:
+          - 200
