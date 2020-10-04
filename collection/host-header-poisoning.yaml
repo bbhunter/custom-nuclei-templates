@@ -9,16 +9,78 @@ info:
 requests:
   - raw:
       - |
-        GET /?1 HTTP/1.1
+        GET /?x-forwarded-host HTTP/1.1
         Host: {{Hostname}}
         X-Forwarded-Host: qqq.com
         User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
         Accept: */*
         Connection: close
       - |
-        GET /?2 HTTP/1.1
+        GET /?x-host HTTP/1.1
         Host: {{Hostname}}
         X-Host: qqq.com
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+        Accept: */*
+        Connection: close
+      - |
+        GET /?x-forwarded-server HTTP/1.1
+        Host: {{Hostname}}
+        X-Forwarded-Server: qqq.com
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+        Accept: */*
+        Connection: close
+      - |
+        GET /?x-http-host-override HTTP/1.1
+        Host: {{Hostname}}
+        X-HTTP-Host-Override: qqq.com
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+        Accept: */*
+        Connection: close
+      - |
+        GET /?forwarded HTTP/1.1
+        Host: {{Hostname}}
+        Forwarded: qqq.com
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+        Accept: */*
+        Connection: close
+      - |
+        GET /?forwarded HTTP/1.1
+        Host: {{Hostname}}
+        Forwarded: qqq.com
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+        Accept: */*
+        Connection: close
+      - |
+        GET /?non-numeric-port-bypass HTTP/1.1
+        Host: {{Hostname}}
+        Forwarded: qqq.com:bad-stuff
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+        Accept: */*
+        Connection: close
+      - |
+        GET /?subdomain-bypass HTTP/1.1
+        Host: {{Hostname}}
+        Forwarded: qqq.{{hostname}}
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+        Accept: */*
+        Connection: close
+      - |
+        GET /?duplicate-host-headers HTTP/1.1
+        Host: {{Hostname}}
+        Host: qqq.com
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+        Accept: */*
+        Connection: close
+      - |
+        GET /?duplicate-host-headers-line-wrap HTTP/1.1
+         Host: qqq.com
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+        Accept: */*
+        Connection: close
+      - |
+        GET https://{{Hostname}}/?absolute-url HTTP/1.1
+        Host: qqq.com
         User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
         Accept: */*
         Connection: close
@@ -27,7 +89,7 @@ requests:
     matchers:
       - type: word
         words:
-          - "qqq.com"
+          - "qqq"
         part: body
         condition: and
       - type: status
